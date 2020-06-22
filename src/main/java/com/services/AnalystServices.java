@@ -1,7 +1,6 @@
 package com.services;
 
 import Beans.Nodes;
-import Beans.Statistic;
 import Beans.Statistics;
 
 import javax.ws.rs.GET;
@@ -11,7 +10,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import java.util.ArrayList;
 import java.util.List;
 
 @Path("analyst")
@@ -31,7 +29,7 @@ public class AnalystServices {
                 return Response.serverError().build();
             else{
                 List stats = Statistics.getInstance().getStats();
-                return Response.ok(stats.subList(stats.size()-n-1,stats.size()-1)).build();
+                return Response.ok(stats.subList(stats.size()-n,stats.size())).build();
             }
         } catch (IndexOutOfBoundsException e) { return Response.ok(Statistics.getInstance().getStats()).build(); }
     }
