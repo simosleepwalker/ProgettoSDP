@@ -2,6 +2,7 @@ package com.services;
 
 import Beans.Nodes;
 import Beans.Statistics;
+import Beans.StatisticsList;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -24,20 +25,34 @@ public class AnalystServices {
     @GET
     public Response getStats(@QueryParam("n") Integer n, @Context UriInfo uriInfo) {
         MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
-        try {
-            if (n.equals(null))
-                return Response.serverError().build();
-            else{
-                List stats = Statistics.getInstance().getStats();
-                return Response.ok(stats.subList(stats.size()-n,stats.size())).build();
-            }
-        } catch (IndexOutOfBoundsException e) { return Response.ok(Statistics.getInstance().getStats()).build(); }
+        if (n.equals(null))
+            return Response.serverError().build();
+        else{
+            StatisticsList statsList = new StatisticsList();
+            statsList.setStatistics(Statistics.getInstance().getStats(n));
+            return Response.ok(statsList).build();
+        }
     }
-    @Path("get_dev_med_stats")
+    @Path("get_dev")
     @GET
-    public Response getDevMed(@QueryParam("n") String n, @Context UriInfo uriInfo) {
-        MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
-        return Response.ok().build();
+    public Response getDev(@QueryParam("n") Integer n, @Context UriInfo uriInfo) {
+        try {
+            MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
+            return Response.ok(Statistics.getInstance().getDevStandard(n)).build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.serverError().build();
+        }
     }
-
+    @Path("get_med")
+    @GET
+    public Response getMed(@QueryParam("n") Integer n, @Context UriInfo uriInfo) {
+        try {
+            MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
+            return Response.ok(Statistics.getInstance().getMedia(n)).build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.serverError().build();
+        }
+    }
 }
