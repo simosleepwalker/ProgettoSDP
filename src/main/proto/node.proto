@@ -1,0 +1,21 @@
+syntax = "proto3";
+package p2p.nodes;
+
+message NodeMessage {
+  int32 id = 1;
+  string ip = 2;
+  int32 port = 3;
+}
+
+message Token {
+  string token = 1;
+}
+
+message OkMessage {
+  string val = 1;
+}
+
+service NodeService {
+  rpc changeNext(NodeMessage) returns (OkMessage);
+  rpc recvToken(Token) returns (OkMessage);
+}

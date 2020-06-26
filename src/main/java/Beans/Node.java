@@ -7,19 +7,19 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "node")
 public class Node {
 
+    @XmlAttribute
     private Integer id;
+    @XmlElement(name = "ip")
     private String ip;
+    @XmlElement(name = "port")
     private Integer port;
 
-    @XmlAttribute
     public void setId(Integer id) {
         this.id = id;
     }
 
-    @XmlElement(name = "ip")
     public void setIp(String ip) { this.ip = ip; }
 
-    @XmlElement(name = "port")
     public void setPort(Integer port) { this.port = port; }
 
     public Integer getId () {
