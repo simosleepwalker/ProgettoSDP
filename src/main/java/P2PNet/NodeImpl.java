@@ -34,7 +34,7 @@ public class NodeImpl extends NodeServiceGrpc.NodeServiceImplBase {
         responseObserver.onCompleted();
         System.out.println(request.getToken());
         try {
-            TimeUnit.SECONDS.sleep(30);
+            TimeUnit.SECONDS.sleep(15);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

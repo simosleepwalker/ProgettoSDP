@@ -13,6 +13,7 @@ import javax.ws.rs.client.*;
 import javax.ws.rs.core.*;
 import java.io.IOException;
 import java.util.List;
+import java.util.Scanner;
 
 public class Node {
 
@@ -46,7 +47,7 @@ public class Node {
         channel.shutdown();
     }
 
-    public boolean insertNode () {
+    public boolean insertInNetwork () {
         Client client = ClientBuilder.newClient(new ClientConfig().register(LoggingFilter.class));
         WebTarget webTarget = client.target("http://localhost:8080/simple_service_webapp_war/webapi/nodes/insert_node");
         Beans.Node nodeBean = new Beans.Node(this.id,this.ip,this.port);
@@ -56,11 +57,34 @@ public class Node {
         try{ nodes = response.readEntity(NodesList.class).getNodes(); } catch (Exception e) { return false; }
         for (int i = 0; i < nodes.size(); i++) {
             if (nodes.get(i).getId().equals(this.id)){
-                changeNext(nodes.get((i-1)%nodes.size()).getIp(),nodes.get((i-1)%nodes.size()).getPort(),this.id,this.ip,this.port);
-                changeNext(this.ip,this.port,nodes.get((i+1)%nodes.size()).getId(),nodes.get((i+1)%nodes.size()).getIp(),nodes.get((i+1)%nodes.size()).getPort());
+                changeNext(nodes.get(Math.abs((i-1)%nodes.size())).getIp(),nodes.get(Math.abs((i-1)%nodes.size())).getPort(),this.id,this.ip,this.port);
+                changeNext(this.ip,this.port,nodes.get(Math.abs((i+1)%nodes.size())).getId(),nodes.get(Math.abs((i+1)%nodes.size())).getIp(),nodes.get(Math.abs((i+1)%nodes.size())).getPort());
             }
         }
+        if (nodes.size() == 1) {
+            p2p.nodes.Node.Token token = p2p.nodes.Node.Token.newBuilder().setToken("Prova").build();
+            sendToken(this.ip,this.port,token);
+        }
         return true;
+    }
+
+    public void exitFromNetwork () {
+        Client client = ClientBuilder.newClient(new ClientConfig().register(LoggingFilter.class));
+        WebTarget webTarget = client.target("http://localhost:8080/simple_service_webapp_war/webapi/nodes/remove_node");
+        Beans.Node nodeBean = new Beans.Node(this.id,this.ip,this.port);
+        Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
+        Response response = invocationBuilder.post(Entity.json(nodeBean));
+        List<Beans.Node> nodes = response.readEntity(NodesList.class).getNodes();
+        for (int i = 0; i < nodes.size(); i++)
+            if (nodes.get(i).getId() > this.id)
+                changeNext(nodes.get(Math.abs((i-1)%nodes.size())).getIp(),nodes.get(Math.abs((i-1)%nodes.size())).getPort(),nodes.get(i).getId(),nodes.get(i).getIp(),nodes.get(i).getPort());
+    }
+
+    public void waitAndExit () {
+        System.out.println("Type any number to exit: ");
+        Scanner scanner = new Scanner(System.in);
+        int x = scanner.nextInt();
+        this.exitFromNetwork();
     }
 
     public Node (Integer id, String ip, Integer port) {
@@ -70,19 +94,13 @@ public class Node {
             this.port = port;
             this.nodeReceiver = ServerBuilder.forPort(port).addService(new NodeImpl(id,ip,port)).build();
             nodeReceiver.start();
-            if (insertNode()) {
+            if (insertInNetwork()) {
                 System.out.println("Node Server started!");
-                nodeReceiver.awaitTermination();
-                //FAR PARTIRE TUTTO IL DIOCANE
+                this.waitAndExit();
             }
-            else {
-                nodeReceiver.shutdown();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            nodeReceiver.shutdown();
         }
+        catch (IOException e) { e.printStackTrace(); }
     }
 
 }

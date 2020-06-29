@@ -36,8 +36,10 @@ public class NodesServices {
     @POST
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response removeNode(Node node) {
+        NodesList nodes = new NodesList();
+        nodes.setNodes(Nodes.getInstance().getNodes());
         Nodes.getInstance().removeNode(node.getId());
-        return Response.ok().build();
+        return Response.ok(nodes).build();
     }
 
 }
