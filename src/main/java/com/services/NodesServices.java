@@ -6,6 +6,7 @@ import javax.ws.rs.core.Response;
 
 import Beans.Node;
 import Beans.Nodes;
+import Beans.NodesList;
 
 @Path("nodes")
 public class NodesServices {
@@ -13,7 +14,9 @@ public class NodesServices {
     @Path("get_nodes")
     @GET
     public Response getNodes() {
-        return Response.ok(Nodes.getInstance().getNodes()).build();
+        NodesList nodes = new NodesList();
+        nodes.setNodes(Nodes.getInstance().getNodes());
+        return Response.ok(nodes).build();
     }
     @Path("insert_node")
     @POST
@@ -21,7 +24,9 @@ public class NodesServices {
     public Response insertNode(Node node) {
         if (Nodes.getInstance().getNode(node.getId()) == null) {
             Nodes.getInstance().addNode(node);
-            return Response.ok(Nodes.getInstance().getNodes()).build();
+            NodesList nodes = new NodesList();
+            nodes.setNodes(Nodes.getInstance().getNodes());
+            return Response.ok(nodes).build();
         }
         else {
             return Response.status(Response.Status.NOT_ACCEPTABLE).build();

@@ -5,7 +5,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "node")
-public class Node {
+public class Node implements Comparable {
 
     @XmlAttribute
     private Integer id;
@@ -38,4 +38,9 @@ public class Node {
 
     public Node () {}
 
+    @Override
+    public int compareTo(Object o) {
+        int id = ((Node)o).getId();
+        return this.getId() - id;
+    }
 }

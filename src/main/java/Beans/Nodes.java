@@ -1,6 +1,8 @@
 package Beans;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 
 public class Nodes {
 
@@ -15,7 +17,9 @@ public class Nodes {
     }
 
     public ArrayList<Node> getNodes() {
-        return this.nodes;
+        ArrayList<Node> nodes = this.nodes;
+        Collections.sort(nodes);
+        return nodes;
     }
 
     public void addNode(Node node) {
