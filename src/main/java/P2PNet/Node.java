@@ -17,19 +17,13 @@ import java.util.Scanner;
 
 public class Node {
 
+    private NodeImpl nodeImpl;
+
     private Integer port;
     private Integer id;
     private String ip;
 
     private Server nodeReceiver;
-
-    public Server getNodeReceiver () {
-        return this.nodeReceiver;
-    }
-
-    public Integer getPort () {
-        return this.port;
-    }
 
     public static void changeNext (String ip, Integer port, Integer newId, String newIp, Integer newPort){
         final ManagedChannel channel = ManagedChannelBuilder.forTarget(ip + ":" + port.toString()).usePlaintext(true).build();
@@ -68,23 +62,11 @@ public class Node {
         return true;
     }
 
-    public void exitFromNetwork () {
-        Client client = ClientBuilder.newClient(new ClientConfig().register(LoggingFilter.class));
-        WebTarget webTarget = client.target("http://localhost:8080/simple_service_webapp_war/webapi/nodes/remove_node");
-        Beans.Node nodeBean = new Beans.Node(this.id,this.ip,this.port);
-        Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
-        Response response = invocationBuilder.post(Entity.json(nodeBean));
-        List<Beans.Node> nodes = response.readEntity(NodesList.class).getNodes();
-        for (int i = 0; i < nodes.size(); i++)
-            if (nodes.get(i).getId() > this.id)
-                changeNext(nodes.get(Math.abs((i-1)%nodes.size())).getIp(),nodes.get(Math.abs((i-1)%nodes.size())).getPort(),nodes.get(i).getId(),nodes.get(i).getIp(),nodes.get(i).getPort());
-    }
-
     public void waitAndExit () {
         System.out.println("Type any number to exit: ");
         Scanner scanner = new Scanner(System.in);
         int x = scanner.nextInt();
-        this.exitFromNetwork();
+        this.nodeImpl.exitFromNetwork();
     }
 
     public Node (Integer id, String ip, Integer port) {
@@ -92,7 +74,8 @@ public class Node {
             this.id = id;
             this.ip = ip;
             this.port = port;
-            this.nodeReceiver = ServerBuilder.forPort(port).addService(new NodeImpl(id,ip,port)).build();
+            this.nodeImpl = new NodeImpl(id,ip,port);
+            this.nodeReceiver = ServerBuilder.forPort(port).addService(this.nodeImpl).build();
             nodeReceiver.start();
             if (insertInNetwork()) {
                 System.out.println("Node Server started!");
