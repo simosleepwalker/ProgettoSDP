@@ -8,7 +8,7 @@ public class Statistics {
 
     private ArrayList<Statistic> stats;
 
-    private static Statistics instance;
+    private volatile static Statistics instance;
 
     public static Statistics getInstance() {
         if(instance==null)

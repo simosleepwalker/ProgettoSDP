@@ -21,7 +21,8 @@ public class Node {
         System.out.println("Insert any number to exit: ");
         Scanner scanner = new Scanner(System.in);
         scanner.nextInt();
-        nodeNetwork.exitFromNetwork();
+        if (nodeNetwork.isConnected())
+            nodeNetwork.exitFromNetwork();
         sensorSimulator.shutdownSensor();
         sensorSimulatorThread.stop();
     }
@@ -36,6 +37,12 @@ class NodeNetwork implements Runnable {
     private String ip;
     private int port;
     private SensorSimulator sensorSimulator;
+
+    private boolean connected;
+
+    public boolean isConnected () {
+        return connected;
+    }
 
     public void exitFromNetwork () {
         this.nodeImpl.exitFromNetwork();
@@ -52,8 +59,10 @@ class NodeNetwork implements Runnable {
             this.setSensorSimulator(this.sensorSimulator);
             this.server = ServerBuilder.forPort(this.port).addService(nodeImpl).build();
             this.server.start();
-            this.nodeImpl.insertInNetwork();
-            server.awaitTermination();
+            if (this.nodeImpl.insertInNetwork()) {
+                this.connected = true;
+                server.awaitTermination();
+            }
         }
         catch (InterruptedException e) { e.printStackTrace(); }
         catch (IOException e) { e.printStackTrace(); }
@@ -64,6 +73,7 @@ class NodeNetwork implements Runnable {
         this.ip = ip;
         this.port = port;
         this.sensorSimulator = sensorSimulator;
+        this.connected = false;
     }
 
 }
