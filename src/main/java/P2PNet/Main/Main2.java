@@ -1,4 +1,6 @@
-package P2PNet;
+package P2PNet.Main;
+
+import P2PNet.Node;
 
 public class Main2 {
 
