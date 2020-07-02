@@ -12,8 +12,8 @@ import p2p.nodes.NodeServiceGrpc;
 import javax.ws.rs.client.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class NodeImpl extends NodeServiceGrpc.NodeServiceImplBase {
 
@@ -25,7 +25,7 @@ public class NodeImpl extends NodeServiceGrpc.NodeServiceImplBase {
     private String nextNodeIp;
     private Integer nextNodePort;
 
-
+    private SensorSimulator sensorSimulator;
 
     //region Metodi grpc
     @Override
@@ -39,17 +39,32 @@ public class NodeImpl extends NodeServiceGrpc.NodeServiceImplBase {
     }
 
     @Override
-    public void recvToken(Node.Token request, StreamObserver<Node.OkMessage> responseObserver) {
+    public void recvToken2(Node.Token2 request, StreamObserver<Node.OkMessage> responseObserver) {
+        List done = new ArrayList(request.getDoneList());
+        List values = new ArrayList(request.getValuesList());
+        int nodeInserted = request.getNodeInserted();
+        int nodeConsidered = request.getNodesConsidered();
         synchronized (this) {
             Node.OkMessage response = Node.OkMessage.newBuilder().setVal("Yeah").build();
             responseObserver.onNext(response);
             responseObserver.onCompleted();
-            System.out.println(request.getToken());
-            try {
-                TimeUnit.SECONDS.sleep(15);
-            } catch (InterruptedException e) { e.printStackTrace(); }
-            sendToken(nextNodeIp, nextNodePort, request);
+            p2p.nodes.Node.Token2.Builder token = p2p.nodes.Node.Token2.newBuilder();
+            nodeConsidered = getNodesNumber();
+            if (this.sensorSimulator.getNewMedia()) {
+                values.add(this.id,this.sensorSimulator.getMedia());
+                if (!((boolean)done.get(this.id))){
+                    done.add(this.id,true);
+                    nodeInserted ++;
+                }
+            }
+            if (nodeConsidered == nodeInserted) {
+                //INVIO STATS
+                System.out.println("INVIO LE STATS");
+                values.clear();
+                done.clear();
+            }
         }
+        sendToken(nextNodeIp, nextNodePort, p2p.nodes.Node.Token2.newBuilder().addAllDone(done).addAllValues(values).setNodeInserted(nodeInserted).setNodesConsidered(nodeConsidered).build());
     }
     //endregion
 
@@ -83,18 +98,23 @@ public class NodeImpl extends NodeServiceGrpc.NodeServiceImplBase {
             }
         }
         if (nodes.size() == 1) {
-            p2p.nodes.Node.Token token = p2p.nodes.Node.Token.newBuilder().setToken("Prova").build();
+            p2p.nodes.Node.Token2 token = p2p.nodes.Node.Token2.newBuilder().setNodesConsidered(1).setNodeInserted(0).addAllValues(new ArrayList<>()).addAllDone(new ArrayList<>()).build();
             sendToken(this.ip,this.port,token);
         }
         return true;
     }
+
+    public void setSensorSimulator(SensorSimulator sensorSimulator) {
+        this.sensorSimulator = sensorSimulator;
+    }
+
     //endregion
 
     //region Client
-    public static void sendToken (String ip, Integer port, p2p.nodes.Node.Token token) {
+    public static void sendToken (String ip, Integer port, p2p.nodes.Node.Token2 token) {
         final ManagedChannel channel = ManagedChannelBuilder.forTarget(ip + ":" + port.toString()).usePlaintext(true).build();
         NodeServiceGrpc.NodeServiceBlockingStub stub = NodeServiceGrpc.newBlockingStub(channel);
-        stub.recvToken(token);
+        stub.recvToken2(token);
         channel.shutdown();
     }
 
@@ -106,6 +126,15 @@ public class NodeImpl extends NodeServiceGrpc.NodeServiceImplBase {
         System.out.println(response.getVal());
         channel.shutdown();
     }
+
+    public static Integer getNodesNumber () {
+        Client client = ClientBuilder.newClient(new ClientConfig().register(LoggingFilter.class));
+        WebTarget webTarget = client.target("http://localhost:8080/simple_service_webapp_war/webapi/analyst/get_nodes_number");
+        Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
+        Response response = invocationBuilder.get();
+        Integer nodesNumber = response.readEntity(Integer.class);
+        return nodesNumber;
+    }
     //endregion
 
     public NodeImpl (Integer id, String ip, Integer port) {
@@ -115,6 +144,7 @@ public class NodeImpl extends NodeServiceGrpc.NodeServiceImplBase {
         this.nextNodeId = null;
         this.nextNodePort = null;
         this.nextNodeIp = null;
+        this.sensorSimulator = null;
     }
 
 }

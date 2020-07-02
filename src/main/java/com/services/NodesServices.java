@@ -18,6 +18,11 @@ public class NodesServices {
         nodes.setNodes(Nodes.getInstance().getNodes());
         return Response.ok(nodes).build();
     }
+    @Path("get_nodes_number")
+    @GET
+    public Response getNodesNumber() {
+        return Response.ok(Nodes.getInstance().getNodes().size()).build();
+    }
     @Path("insert_node")
     @POST
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
