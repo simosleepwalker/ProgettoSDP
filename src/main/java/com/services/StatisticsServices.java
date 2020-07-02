@@ -12,7 +12,8 @@ public class StatisticsServices {
     @Path("insert_stat")
     @POST
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response insertStat(Statistic stat) {
+    public Response insertStat(Double val) {
+        Statistic stat = new Statistic(val);
         Statistics.getInstance().addStat(stat);
         return Response.ok().build();
     }

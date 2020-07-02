@@ -8,13 +8,8 @@ message NodeMessage {
 }
 
 message Token {
-  string token = 1;
-}
-
-message Token2 {
   int32 nodesConsidered = 1;
-  int32 nodeInserted = 2;
-  repeated bool done = 3;
+  repeated int32 ids = 2;
   repeated double values = 4;
 }
 
@@ -25,5 +20,4 @@ message OkMessage {
 service NodeService {
   rpc changeNext(NodeMessage) returns (OkMessage);
   rpc recvToken(Token) returns (OkMessage);
-  rpc recvToken2(Token2) returns (OkMessage);
 }

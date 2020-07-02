@@ -39,32 +39,29 @@ public class NodeImpl extends NodeServiceGrpc.NodeServiceImplBase {
     }
 
     @Override
-    public void recvToken2(Node.Token2 request, StreamObserver<Node.OkMessage> responseObserver) {
-        List done = new ArrayList(request.getDoneList());
-        List values = new ArrayList(request.getValuesList());
-        int nodeInserted = request.getNodeInserted();
-        int nodeConsidered = request.getNodesConsidered();
-        synchronized (this) {
-            Node.OkMessage response = Node.OkMessage.newBuilder().setVal("Yeah").build();
-            responseObserver.onNext(response);
-            responseObserver.onCompleted();
-            p2p.nodes.Node.Token2.Builder token = p2p.nodes.Node.Token2.newBuilder();
-            nodeConsidered = getNodesNumber();
-            if (this.sensorSimulator.getNewMedia()) {
-                values.add(this.id,this.sensorSimulator.getMedia());
-                if (!((boolean)done.get(this.id))){
-                    done.add(this.id,true);
-                    nodeInserted ++;
+    public void recvToken (Node.Token request, StreamObserver<Node.OkMessage> responseObserver) {
+        try {
+            List done = new ArrayList(request.getIdsList());
+            List values = new ArrayList(request.getValuesList());
+            int nodeConsidered = request.getNodesConsidered();
+            synchronized (this) {
+                Node.OkMessage response = Node.OkMessage.newBuilder().setVal("Yeah").build();
+                responseObserver.onNext(response);
+                responseObserver.onCompleted();
+                nodeConsidered = getNodesNumber();
+                if (this.sensorSimulator.getNewMedia() && this.haveToInsert(done)) {
+                    values.add(this.sensorSimulator.getMedia());
+                    done.add(this.id);
+                }
+                if (nodeConsidered == done.size()) {
+                    sendStat(getMedia(values));
+                    values.clear();
+                    done.clear();
                 }
             }
-            if (nodeConsidered == nodeInserted) {
-                //INVIO STATS
-                System.out.println("INVIO LE STATS");
-                values.clear();
-                done.clear();
-            }
+            sendToken(nextNodeIp, nextNodePort, p2p.nodes.Node.Token.newBuilder().addAllIds(done).addAllValues(values).setNodesConsidered(nodeConsidered).build());
         }
-        sendToken(nextNodeIp, nextNodePort, p2p.nodes.Node.Token2.newBuilder().addAllDone(done).addAllValues(values).setNodeInserted(nodeInserted).setNodesConsidered(nodeConsidered).build());
+        catch (javax.ws.rs.ProcessingException e) { }
     }
     //endregion
 
@@ -97,10 +94,15 @@ public class NodeImpl extends NodeServiceGrpc.NodeServiceImplBase {
                 changeNext(this.ip,this.port,nodes.get(Math.abs((i+1)%nodes.size())).getId(),nodes.get(Math.abs((i+1)%nodes.size())).getIp(),nodes.get(Math.abs((i+1)%nodes.size())).getPort());
             }
         }
-        if (nodes.size() == 1) {
-            p2p.nodes.Node.Token2 token = p2p.nodes.Node.Token2.newBuilder().setNodesConsidered(1).setNodeInserted(0).addAllValues(new ArrayList<>()).addAllDone(new ArrayList<>()).build();
-            sendToken(this.ip,this.port,token);
-        }
+        if (nodes.size() == 1)
+            sendToken(this.ip,this.port,p2p.nodes.Node.Token.newBuilder().setNodesConsidered(1).build());
+        return true;
+    }
+
+    public boolean haveToInsert (List<Integer> ids) {
+        for (int i = 0; i < ids.size(); i++)
+            if (ids.get(i).equals(this.id))
+                return false;
         return true;
     }
 
@@ -108,13 +110,19 @@ public class NodeImpl extends NodeServiceGrpc.NodeServiceImplBase {
         this.sensorSimulator = sensorSimulator;
     }
 
+    public double getMedia (List<Double> vals) {
+        double sum = 0;
+        for (int i = 0; i < vals.size(); i++)
+            sum = sum + vals.get(i);
+        return sum/vals.size();
+    }
     //endregion
 
     //region Client
-    public static void sendToken (String ip, Integer port, p2p.nodes.Node.Token2 token) {
+    public static void sendToken (String ip, Integer port, p2p.nodes.Node.Token token) {
         final ManagedChannel channel = ManagedChannelBuilder.forTarget(ip + ":" + port.toString()).usePlaintext(true).build();
         NodeServiceGrpc.NodeServiceBlockingStub stub = NodeServiceGrpc.newBlockingStub(channel);
-        stub.recvToken2(token);
+        stub.recvToken(token);
         channel.shutdown();
     }
 
@@ -123,7 +131,6 @@ public class NodeImpl extends NodeServiceGrpc.NodeServiceImplBase {
         NodeServiceGrpc.NodeServiceBlockingStub stub = NodeServiceGrpc.newBlockingStub(channel);
         p2p.nodes.Node.NodeMessage request = p2p.nodes.Node.NodeMessage.newBuilder().setPort(newPort).setId(newId).setIp(newIp).build();
         p2p.nodes.Node.OkMessage response = stub.changeNext(request);
-        System.out.println(response.getVal());
         channel.shutdown();
     }
 
@@ -134,6 +141,13 @@ public class NodeImpl extends NodeServiceGrpc.NodeServiceImplBase {
         Response response = invocationBuilder.get();
         Integer nodesNumber = response.readEntity(Integer.class);
         return nodesNumber;
+    }
+
+    public static void sendStat (double val) {
+        Client client = ClientBuilder.newClient(new ClientConfig().register(LoggingFilter.class));
+        WebTarget webTarget = client.target("http://localhost:8080/simple_service_webapp_war/webapi/statistics/insert_stat");
+        Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
+        invocationBuilder.post(Entity.json(val));
     }
     //endregion
 

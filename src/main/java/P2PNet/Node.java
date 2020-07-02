@@ -53,7 +53,6 @@ class NodeNetwork implements Runnable {
             this.server = ServerBuilder.forPort(this.port).addService(nodeImpl).build();
             this.server.start();
             this.nodeImpl.insertInNetwork();
-            System.out.println("Node started!");
             server.awaitTermination();
         }
         catch (InterruptedException e) { e.printStackTrace(); }

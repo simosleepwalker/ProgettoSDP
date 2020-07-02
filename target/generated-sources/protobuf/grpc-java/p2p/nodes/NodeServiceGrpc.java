@@ -53,19 +53,6 @@ public final class NodeServiceGrpc {
               p2p.nodes.Node.OkMessage.getDefaultInstance()))
           .setSchemaDescriptor(new NodeServiceMethodDescriptorSupplier("recvToken"))
           .build();
-  @io.grpc.ExperimentalApi("https://github.com/grpc/grpc-java/issues/1901")
-  public static final io.grpc.MethodDescriptor<p2p.nodes.Node.Token2,
-      p2p.nodes.Node.OkMessage> METHOD_RECV_TOKEN2 =
-      io.grpc.MethodDescriptor.<p2p.nodes.Node.Token2, p2p.nodes.Node.OkMessage>newBuilder()
-          .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
-          .setFullMethodName(generateFullMethodName(
-              "p2p.nodes.NodeService", "recvToken2"))
-          .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-              p2p.nodes.Node.Token2.getDefaultInstance()))
-          .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-              p2p.nodes.Node.OkMessage.getDefaultInstance()))
-          .setSchemaDescriptor(new NodeServiceMethodDescriptorSupplier("recvToken2"))
-          .build();
 
   /**
    * Creates a new async stub that supports all call types for the service
@@ -108,13 +95,6 @@ public final class NodeServiceGrpc {
       asyncUnimplementedUnaryCall(METHOD_RECV_TOKEN, responseObserver);
     }
 
-    /**
-     */
-    public void recvToken2(p2p.nodes.Node.Token2 request,
-        io.grpc.stub.StreamObserver<p2p.nodes.Node.OkMessage> responseObserver) {
-      asyncUnimplementedUnaryCall(METHOD_RECV_TOKEN2, responseObserver);
-    }
-
     @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
       return io.grpc.ServerServiceDefinition.builder(getServiceDescriptor())
           .addMethod(
@@ -131,13 +111,6 @@ public final class NodeServiceGrpc {
                 p2p.nodes.Node.Token,
                 p2p.nodes.Node.OkMessage>(
                   this, METHODID_RECV_TOKEN)))
-          .addMethod(
-            METHOD_RECV_TOKEN2,
-            asyncUnaryCall(
-              new MethodHandlers<
-                p2p.nodes.Node.Token2,
-                p2p.nodes.Node.OkMessage>(
-                  this, METHODID_RECV_TOKEN2)))
           .build();
     }
   }
@@ -175,14 +148,6 @@ public final class NodeServiceGrpc {
       asyncUnaryCall(
           getChannel().newCall(METHOD_RECV_TOKEN, getCallOptions()), request, responseObserver);
     }
-
-    /**
-     */
-    public void recvToken2(p2p.nodes.Node.Token2 request,
-        io.grpc.stub.StreamObserver<p2p.nodes.Node.OkMessage> responseObserver) {
-      asyncUnaryCall(
-          getChannel().newCall(METHOD_RECV_TOKEN2, getCallOptions()), request, responseObserver);
-    }
   }
 
   /**
@@ -215,13 +180,6 @@ public final class NodeServiceGrpc {
     public p2p.nodes.Node.OkMessage recvToken(p2p.nodes.Node.Token request) {
       return blockingUnaryCall(
           getChannel(), METHOD_RECV_TOKEN, getCallOptions(), request);
-    }
-
-    /**
-     */
-    public p2p.nodes.Node.OkMessage recvToken2(p2p.nodes.Node.Token2 request) {
-      return blockingUnaryCall(
-          getChannel(), METHOD_RECV_TOKEN2, getCallOptions(), request);
     }
   }
 
@@ -258,19 +216,10 @@ public final class NodeServiceGrpc {
       return futureUnaryCall(
           getChannel().newCall(METHOD_RECV_TOKEN, getCallOptions()), request);
     }
-
-    /**
-     */
-    public com.google.common.util.concurrent.ListenableFuture<p2p.nodes.Node.OkMessage> recvToken2(
-        p2p.nodes.Node.Token2 request) {
-      return futureUnaryCall(
-          getChannel().newCall(METHOD_RECV_TOKEN2, getCallOptions()), request);
-    }
   }
 
   private static final int METHODID_CHANGE_NEXT = 0;
   private static final int METHODID_RECV_TOKEN = 1;
-  private static final int METHODID_RECV_TOKEN2 = 2;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -295,10 +244,6 @@ public final class NodeServiceGrpc {
           break;
         case METHODID_RECV_TOKEN:
           serviceImpl.recvToken((p2p.nodes.Node.Token) request,
-              (io.grpc.stub.StreamObserver<p2p.nodes.Node.OkMessage>) responseObserver);
-          break;
-        case METHODID_RECV_TOKEN2:
-          serviceImpl.recvToken2((p2p.nodes.Node.Token2) request,
               (io.grpc.stub.StreamObserver<p2p.nodes.Node.OkMessage>) responseObserver);
           break;
         default:
@@ -364,7 +309,6 @@ public final class NodeServiceGrpc {
               .setSchemaDescriptor(new NodeServiceFileDescriptorSupplier())
               .addMethod(METHOD_CHANGE_NEXT)
               .addMethod(METHOD_RECV_TOKEN)
-              .addMethod(METHOD_RECV_TOKEN2)
               .build();
         }
       }
