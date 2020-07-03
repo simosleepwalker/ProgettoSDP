@@ -1,7 +1,9 @@
 package AnalystClient;
 
 import Beans.StatisticsList;
+import org.glassfish.jersey.message.internal.MessageBodyProviderNotFoundException;
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class ClientConsole {
@@ -38,8 +40,13 @@ public class ClientConsole {
     }
 
     public int getInput (String sentence) {
-        System.out.print(sentence);
-        return scanner.nextInt();
+        try {
+            System.out.print(sentence);
+            return scanner.nextInt();
+        }
+        catch (InputMismatchException e) {
+            return this.getInput("Opzione non disponibile, riprovare: ");
+        }
     }
 
     public void printWelcome () {
@@ -54,16 +61,32 @@ public class ClientConsole {
         System.out.println("2) Visualizza ultime n statistiche");
         System.out.println("3) Visualizza media delle ultime n statistiche");
         System.out.println("4) Visualizza deviazione standard delle ultime n statistiche");
-        Integer choice = this.getInput();
-        switch (choice) {
-            case 1: choice.equals(1);
-                printNodesNumber();
-            case 2: choice.equals(2);
-                printLastStats(this.getInput("Quante statistiche vuoi vedere? "));
-            case 3: choice.equals(3);
-                printMedLastStats(this.getInput("Quante statistiche vuoi usare per l'analisi? "));
-            case 4: choice.equals(4);
-                printDevStandard(this.getInput("Quante statistiche vuoi usare per l'analisi? "));
+        System.out.println("5) Esci");
+        Integer choice = this.getInput("Scegli un'opzione: ");
+        try {
+            switch (choice) {
+                case 1: choice.equals(1);
+                    printNodesNumber();
+                case 2: choice.equals(2);
+                    printLastStats(this.getInput("Quante statistiche vuoi vedere? "));
+                case 3: choice.equals(3);
+                    printMedLastStats(this.getInput("Quante statistiche vuoi usare per l'analisi? "));
+                case 4: choice.equals(4);
+                    printDevStandard(this.getInput("Quante statistiche vuoi usare per l'analisi? "));
+                case 5: choice.equals(5);
+                    System.exit(1);
+                default:
+                    System.out.println("Opzione non disponibile");
+                    printMainMenu();
+            }
+        }
+        catch (MessageBodyProviderNotFoundException e) {
+            System.out.println("Non è stato possibile completare l'operazione, non ci sono abbastanza statistiche");
+            printMainMenu();
+        }
+        catch (javax.ws.rs.ProcessingException e) {
+            System.out.println("C'è stato un problema nel contattare il server");
+            printMainMenu();
         }
     }
 

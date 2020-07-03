@@ -50,7 +50,7 @@ public class NodeImpl extends NodeServiceGrpc.NodeServiceImplBase {
             List done = new ArrayList(request.getIdsList());
             List values = new ArrayList(request.getValuesList());
             int nodeConsidered = request.getNodesConsidered();
-            Node.OkMessage response = Node.OkMessage.newBuilder().setVal("Yeah").build();
+            Node.OkMessage response = Node.OkMessage.newBuilder().setVal("Ok").build();
             responseObserver.onNext(response);
             responseObserver.onCompleted();
             nodeConsidered = getNodesNumber();
@@ -104,6 +104,7 @@ public class NodeImpl extends NodeServiceGrpc.NodeServiceImplBase {
         }
         catch (Exception e) {
             System.out.println("Server can't be contacted or a Node with this id is already in the Network");
+            e.printStackTrace();
             return false;
         }
     }
@@ -138,10 +139,8 @@ public class NodeImpl extends NodeServiceGrpc.NodeServiceImplBase {
             channel.shutdown();
         }
         catch (NullPointerException e) {
-            synchronized (sync) {
-                sync.wait();
-                sendToken(ip,port,token);
-            }
+            sync.wait();
+            sendToken(ip,port,token);
         }
     }
 

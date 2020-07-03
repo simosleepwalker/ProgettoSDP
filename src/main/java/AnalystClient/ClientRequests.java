@@ -3,6 +3,7 @@ package AnalystClient;
 import Beans.StatisticsList;
 import com.sun.jersey.api.container.filter.LoggingFilter;
 import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.message.internal.MessageBodyProviderNotFoundException;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -30,14 +31,14 @@ public class ClientRequests {
         return response.readEntity(StatisticsList.class);
     }
 
-    public Double getDevStandard (Integer n) {
+    public Double getDevStandard (Integer n) throws MessageBodyProviderNotFoundException {
         WebTarget webTarget = this.client.target("http://localhost:8080/simple_service_webapp_war/webapi/analyst/get_dev").queryParam("n",n.toString());
         Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
         Response response = invocationBuilder.get();
         return response.readEntity(Double.class);
     }
 
-    public Double getMedia (Integer n) {
+    public Double getMedia (Integer n) throws MessageBodyProviderNotFoundException {
         WebTarget webTarget = this.client.target("http://localhost:8080/simple_service_webapp_war/webapi/analyst/get_med").queryParam("n",n.toString());
         Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
         Response response = invocationBuilder.get();
