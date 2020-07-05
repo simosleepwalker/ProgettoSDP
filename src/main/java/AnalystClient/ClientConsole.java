@@ -34,10 +34,6 @@ public class ClientConsole {
         printMainMenu();
     }
 
-    public int getInput () {
-        System.out.print("User Input: ");
-        return scanner.nextInt();
-    }
 
     public int getInput (String sentence) {
         try {
@@ -45,7 +41,9 @@ public class ClientConsole {
             return scanner.nextInt();
         }
         catch (InputMismatchException e) {
-            return this.getInput("Opzione non disponibile, riprovare: ");
+            scanner.nextLine();
+            System.out.print("Opzione non disponibile.\n");
+            return this.getInput(sentence);
         }
     }
 

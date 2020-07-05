@@ -6,9 +6,18 @@ import io.grpc.Server;
 import io.grpc.ServerBuilder;
 
 import java.io.IOException;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Node {
+
+    public void waitForShutdown () {
+        try {
+            System.out.println("Enter anything to exit: ");
+            Scanner scanner = new Scanner(System.in);
+            scanner.nextByte();
+        } catch (InputMismatchException e) { }
+    }
 
     public Node (int id, String ip, int port) {
         SensorSimulator sensorSimulator = new SensorSimulator();
@@ -18,9 +27,7 @@ public class Node {
         Thread sensorSimulatorThread = new Thread(sensorSimulator);
         sensorSimulatorThread.start();
 
-        System.out.println("Insert any number to exit: ");
-        Scanner scanner = new Scanner(System.in);
-        scanner.nextInt();
+        this.waitForShutdown();
         if (nodeNetwork.isConnected())
             nodeNetwork.exitFromNetwork();
         sensorSimulator.shutdownSensor();
