@@ -15,10 +15,17 @@ public class Nodes {
         return instance;
     }
 
-    public synchronized ArrayList<Node> getNodes() {
+    public ArrayList<Node> getNodes() {
         ArrayList<Node> nodes = this.nodes;
         Collections.sort(nodes);
         return nodes;
+    }
+
+    public Node getNode(Integer nodeId) {
+        for (int i = 0; i < this.nodes.size(); i++)
+            if (this.nodes.get(i).getId().equals(nodeId))
+                return this.nodes.get(i);
+        return null;
     }
 
     public synchronized void addNode(Node node) {
@@ -26,13 +33,6 @@ public class Nodes {
     }
 
     public synchronized void removeNode (Integer id) { this.nodes.remove(this.getNode(id)); }
-
-    public synchronized Node getNode(Integer nodeId) {
-        for (int i = 0; i < this.nodes.size(); i++)
-            if (this.nodes.get(i).getId().equals(nodeId))
-                return this.nodes.get(i);
-        return null;
-    }
 
     public Nodes () {
         this.nodes = new ArrayList<Node>();

@@ -4,6 +4,7 @@ import Beans.NodesList;
 import com.sun.jersey.api.container.filter.LoggingFilter;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
 import org.glassfish.jersey.client.ClientConfig;
 import p2p.nodes.Node;
@@ -63,7 +64,9 @@ public class NodeImpl extends NodeServiceGrpc.NodeServiceImplBase {
                 values.clear();
                 done.clear();
             }
-            sendToken(nextNodeIp, nextNodePort, p2p.nodes.Node.Token.newBuilder().addAllIds(done).addAllValues(values).setNodesConsidered(nodeConsidered).build());
+            synchronized (sync) {
+                sendToken(nextNodeIp, nextNodePort, p2p.nodes.Node.Token.newBuilder().addAllIds(done).addAllValues(values).setNodesConsidered(nodeConsidered).build());
+            }
         }
         catch (ProcessingException | InterruptedException e) { }
     }
@@ -72,6 +75,8 @@ public class NodeImpl extends NodeServiceGrpc.NodeServiceImplBase {
     //region Metodi
     public void exitFromNetwork () {
         synchronized (sync) {
+            //if (this.mustSendToken)
+            //    try { sync.wait(); } catch (InterruptedException e) { }
             Client client = ClientBuilder.newClient(new ClientConfig().register(LoggingFilter.class));
             WebTarget webTarget = client.target("http://localhost:8080/simple_service_webapp_war/webapi/nodes/remove_node");
             Beans.Node nodeBean = new Beans.Node(this.id,this.ip,this.port);
@@ -103,8 +108,7 @@ public class NodeImpl extends NodeServiceGrpc.NodeServiceImplBase {
             return true;
         }
         catch (Exception e) {
-            System.out.println("Server can't be contacted or a Node with this id is already in the Network");
-            e.printStackTrace();
+            System.out.println("Server can't be contacted or a Node with the same id is already in the Network");
             return false;
         }
     }
@@ -142,6 +146,7 @@ public class NodeImpl extends NodeServiceGrpc.NodeServiceImplBase {
             sync.wait();
             sendToken(ip,port,token);
         }
+        catch (StatusRuntimeException e) { }
     }
 
     public static void changeNext (String ip, Integer port, Integer newId, String newIp, Integer newPort){

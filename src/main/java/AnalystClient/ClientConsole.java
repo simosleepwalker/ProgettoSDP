@@ -17,8 +17,8 @@ public class ClientConsole {
     }
 
     public void printLastStats (Integer n) {
-        System.out.println("Ultime " + n.toString() + " statistiche: ");
         StatisticsList stats = this.requests.getStats(n);
+        System.out.println("Ultime " + stats.getStatistics().size() + " statistiche: ");
         for (int i = 0; i < stats.getStatistics().size(); i++)
             System.out.println(stats.getStatistics().get(i).toString());
         printMainMenu();

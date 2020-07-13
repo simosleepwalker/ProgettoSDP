@@ -27,12 +27,7 @@ public class Statistics {
     public List<Statistic> getStats (Integer n) {
         try {
             return this.stats.subList(this.stats.size()-n,this.stats.size());
-        } catch (IndexOutOfBoundsException e) {
-            return this.getStats();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return this.getStats();
-        }
+        } catch (IndexOutOfBoundsException e) { return this.getStats(); }
     }
 
     public Statistics () {
