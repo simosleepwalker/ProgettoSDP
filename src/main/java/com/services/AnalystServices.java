@@ -37,12 +37,8 @@ public class AnalystServices {
     @GET
     public Response getDev(@QueryParam("n") Integer n, @Context UriInfo uriInfo) {
         try {
-            MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
             return Response.ok(Statistics.getInstance().getDevStandard(n)).build();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Response.serverError().build();
-        }
+        } catch (Exception e) { return Response.serverError().build(); }
     }
     @Path("get_med")
     @GET
@@ -50,9 +46,6 @@ public class AnalystServices {
         try {
             MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
             return Response.ok(Statistics.getInstance().getMedia(n)).build();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Response.serverError().build();
-        }
+        } catch (Exception e) { return Response.serverError().build(); }
     }
 }

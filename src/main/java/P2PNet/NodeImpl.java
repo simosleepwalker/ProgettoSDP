@@ -7,6 +7,7 @@ import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
 import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.message.internal.MessageBodyProviderNotFoundException;
 import p2p.nodes.Node;
 import p2p.nodes.NodeServiceGrpc;
 
@@ -87,16 +88,18 @@ public class NodeImpl extends NodeServiceGrpc.NodeServiceImplBase {
             while (this.mustSendToken)
                 try { syncToken.wait(); } catch (InterruptedException e) { }
             this.canReceiveToken = false;
-            try { Thread.sleep(10000); } catch (Exception e) { }
             Client client = ClientBuilder.newClient(new ClientConfig().register(LoggingFilter.class));
             WebTarget webTarget = client.target("http://localhost:8080/simple_service_webapp_war/webapi/nodes/remove_node");
             Beans.Node nodeBean = new Beans.Node(this.id,this.ip,this.port);
             Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
             Response response = invocationBuilder.post(Entity.json(nodeBean));
-            List<Beans.Node> nodes = response.readEntity(NodesList.class).getNodes();
-            for (int i = 0; i < nodes.size(); i++)
-                if (nodes.get(i).getId().equals(this.nextNodeId))
-                    this.changeNext(nodes.get(mod((i-1),nodes.size())).getIp(),nodes.get(mod((i-1),nodes.size())).getPort(),nodes.get(i).getId(),nodes.get(i).getIp(),nodes.get(i).getPort());
+            try {
+                List<Beans.Node> nodes = response.readEntity(NodesList.class).getNodes();
+                for (int i = 0; i < nodes.size(); i++)
+                    if (nodes.get(i).getId().equals(this.nextNodeId))
+                        this.changeNext(nodes.get(mod((i-1),nodes.size())).getIp(),nodes.get(mod((i-1),nodes.size())).getPort(),nodes.get(i).getId(),nodes.get(i).getIp(),nodes.get(i).getPort());
+            }
+            catch (MessageBodyProviderNotFoundException e) { this.exitFromNetwork(); }
         }
     }
 
