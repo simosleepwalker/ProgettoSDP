@@ -62,7 +62,7 @@ public class NodeImpl extends NodeServiceGrpc.NodeServiceImplBase {
                 values.add(this.sensorSimulator.getMedia());
                 done.add(this.id);
             }
-            if (nodeConsidered == done.size()) {
+            if (nodeConsidered <= done.size()) {
                 sendStat(getMedia(values));
                 values.clear();
                 done.clear();
@@ -87,6 +87,7 @@ public class NodeImpl extends NodeServiceGrpc.NodeServiceImplBase {
             while (this.mustSendToken)
                 try { syncToken.wait(); } catch (InterruptedException e) { }
             this.canReceiveToken = false;
+            try { Thread.sleep(10000); } catch (Exception e) { }
             Client client = ClientBuilder.newClient(new ClientConfig().register(LoggingFilter.class));
             WebTarget webTarget = client.target("http://localhost:8080/simple_service_webapp_war/webapi/nodes/remove_node");
             Beans.Node nodeBean = new Beans.Node(this.id,this.ip,this.port);
@@ -158,8 +159,8 @@ public class NodeImpl extends NodeServiceGrpc.NodeServiceImplBase {
             catch (NullPointerException e) {
                 try {
                     syncNode.wait();
-                    this.sendToken(this.nextNodeIp,this.nextNodePort,token);
-                } catch (InterruptedException ex) { }
+                    this.sendToken(this.nextNodeIp,this.nextNodePort,token); }
+                catch (InterruptedException ex) { }
             }
             catch (StatusRuntimeException e) { }
         }
@@ -186,7 +187,8 @@ public class NodeImpl extends NodeServiceGrpc.NodeServiceImplBase {
         Client client = ClientBuilder.newClient(new ClientConfig().register(LoggingFilter.class));
         WebTarget webTarget = client.target("http://localhost:8080/simple_service_webapp_war/webapi/statistics/insert_stat");
         Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
-        invocationBuilder.post(Entity.json(val));
+        try { invocationBuilder.post(Entity.json(val)); }
+        catch (NumberFormatException e) { }
     }
     //endregion
 
