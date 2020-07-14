@@ -35,6 +35,7 @@ class NodeNetwork implements Runnable {
             this.server.start();
             if (this.nodeImpl.insertInNetwork()) {
                 this.connected = true;
+                System.out.println("Enter anything to exit: ");
                 server.awaitTermination();
             }
         }

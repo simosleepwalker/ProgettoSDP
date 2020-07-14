@@ -7,7 +7,6 @@ public class Node {
 
     public void waitForShutdown () {
         try {
-            System.out.println("Enter anything to exit: ");
             Scanner scanner = new Scanner(System.in);
             scanner.nextByte();
         } catch (InputMismatchException e) { }

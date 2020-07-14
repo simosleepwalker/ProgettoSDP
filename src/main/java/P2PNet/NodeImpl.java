@@ -11,6 +11,7 @@ import org.glassfish.jersey.message.internal.MessageBodyProviderNotFoundExceptio
 import p2p.nodes.Node;
 import p2p.nodes.NodeServiceGrpc;
 
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -191,7 +192,7 @@ public class NodeImpl extends NodeServiceGrpc.NodeServiceImplBase {
         WebTarget webTarget = client.target("http://localhost:8080/simple_service_webapp_war/webapi/statistics/insert_stat");
         Invocation.Builder invocationBuilder =  webTarget.request(MediaType.APPLICATION_JSON);
         try { invocationBuilder.post(Entity.json(val)); }
-        catch (NumberFormatException e) { }
+        catch (NumberFormatException | ProcessingException e) { }
     }
     //endregion
 
