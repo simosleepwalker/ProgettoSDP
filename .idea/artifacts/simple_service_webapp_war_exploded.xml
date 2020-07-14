@@ -11,7 +11,7 @@
     <root id="root">
       <element id="directory" name="WEB-INF">
         <element id="directory" name="classes">
-          <element id="module-output" name="simple-service-webapp" />
+          <element id="module-output" name="Progetto SDP" />
         </element>
         <element id="directory" name="lib">
           <element id="library" level="project" name="Maven: org.glassfish.jersey.containers:jersey-container-servlet-core:2.31" />
@@ -84,7 +84,7 @@
       <element id="directory" name="META-INF">
         <element id="file-copy" path="$PROJECT_DIR$/target/simple-service-webapp-1.0-SNAPSHOT/META-INF/MANIFEST.MF" />
       </element>
-      <element id="javaee-facet-resources" facet="simple-service-webapp/web/Web" />
+      <element id="javaee-facet-resources" facet="Progetto SDP/web/Web" />
     </root>
   </artifact>
 </component>
