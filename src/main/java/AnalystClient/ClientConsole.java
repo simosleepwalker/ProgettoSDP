@@ -10,6 +10,12 @@ public class ClientConsole {
 
     private Scanner scanner;
     private ClientRequests requests;
+    private ClientNotificationsImpl notifications;
+
+    public void printNotification (String notification) {
+        System.out.println(notification);
+        this.printMainMenu();
+    }
 
     public void printNodesNumber () {
         System.out.println("Nodi nella rete: " + this.requests.getNodes().toString());
@@ -53,6 +59,11 @@ public class ClientConsole {
         System.out.println("--------------------------------------");
     }
 
+    public void exit () {
+        this.notifications.exit();
+        System.exit(1);
+    }
+
     public void printMainMenu () {
         System.out.println();
         System.out.println("1) Visualizza numero nodi nel quartiere");
@@ -72,7 +83,7 @@ public class ClientConsole {
                 case 4: choice.equals(4);
                     printDevStandard(this.getInput("Quante statistiche vuoi usare per l'analisi? "));
                 case 5: choice.equals(5);
-                    System.exit(1);
+                    this.exit();
                 default:
                     System.out.println("Opzione non disponibile");
                     printMainMenu();
@@ -88,9 +99,10 @@ public class ClientConsole {
         }
     }
 
-    public ClientConsole (ClientRequests requests) {
+    public ClientConsole (ClientRequests requests, ClientNotificationsImpl notifications) {
         this.scanner = new Scanner(System.in);
         this.requests = requests;
+        this.notifications = notifications;
         printWelcome();
         printMainMenu();
     }

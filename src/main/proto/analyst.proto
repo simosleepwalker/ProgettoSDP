@@ -1,0 +1,14 @@
+syntax = "proto3";
+package analyst.client;
+
+message notificationMessage {
+  string message = 1;
+}
+
+message okMessage {
+  string message = 1;
+}
+
+service AnalystClient {
+  rpc notify (notificationMessage) returns (okMessage);
+}

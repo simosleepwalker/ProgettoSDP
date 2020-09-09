@@ -9,19 +9,19 @@ public class Nodes {
 
     private volatile static Nodes instance;
 
-    public static Nodes getInstance() {
+    public synchronized static Nodes getInstance() {
         if(instance==null)
             instance = new Nodes();
         return instance;
     }
 
-    public ArrayList<Node> getNodes() {
+    public synchronized ArrayList<Node> getNodes() {
         ArrayList<Node> nodes = this.nodes;
         Collections.sort(nodes);
         return nodes;
     }
 
-    public Node getNode(Integer nodeId) {
+    public synchronized Node getNode(Integer nodeId) {
         for (int i = 0; i < this.nodes.size(); i++)
             if (this.nodes.get(i).getId().equals(nodeId))
                 return this.nodes.get(i);

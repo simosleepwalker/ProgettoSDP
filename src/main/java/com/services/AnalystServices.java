@@ -1,21 +1,18 @@
 package com.services;
 
-import Beans.Nodes;
-import Beans.Statistics;
-import Beans.StatisticsList;
+import Beans.*;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.*;
+import javax.ws.rs.core.*;
 import java.util.List;
 
 @Path("analyst")
 public class AnalystServices {
-
+    @Path("get_analyst_number")
+    @GET
+    public Response getAnalystNumber() {
+        return Response.ok(AnalystClients.getInstance().getAnalystClients().size()).build();
+    }
     @Path("get_nodes_number")
     @GET
     public Response getNodesNumber() {
@@ -48,4 +45,24 @@ public class AnalystServices {
             return Response.ok(Statistics.getInstance().getMedia(n)).build();
         } catch (Exception e) { return Response.serverError().build(); }
     }
+    @Path("insert_analyst")
+    @POST
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public synchronized Response insertAnalyst(AnalystClient analyst) {
+        if (AnalystClients.getInstance().getAnalyst(analyst.getId()) == null) {
+            AnalystClients.getInstance().addAnalyst(analyst);
+            return Response.ok().build();
+        }
+        else {
+            return Response.status(Response.Status.NOT_ACCEPTABLE).build();
+        }
+    }
+    @Path("remove_analyst")
+    @POST
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public synchronized Response removeAnalyst(AnalystClient analyst) {
+        AnalystClients.getInstance().removeAnalyst(analyst.getId());
+        return Response.ok().build();
+    }
+
 }

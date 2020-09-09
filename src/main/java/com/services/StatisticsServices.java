@@ -15,6 +15,7 @@ public class StatisticsServices {
     public synchronized Response insertStat(Double val) {
         Statistic stat = new Statistic(val);
         Statistics.getInstance().addStat(stat);
+        Notifications.sendNotification("New Statistic available");
         return Response.ok().build();
     }
 

@@ -31,6 +31,7 @@ public class NodesServices {
             Nodes.getInstance().addNode(node);
             NodesList nodes = new NodesList();
             nodes.setNodes(Nodes.getInstance().getNodes());
+            Notifications.sendNotification("Node [" + node.getId().toString() + "] entered in Network");
             return Response.ok(nodes).build();
         }
         else {
@@ -44,6 +45,7 @@ public class NodesServices {
         NodesList nodes = new NodesList();
         nodes.setNodes(Nodes.getInstance().getNodes());
         Nodes.getInstance().removeNode(node.getId());
+        Notifications.sendNotification("Node [" + node.getId().toString() + "] exited from Network");
         return Response.ok(nodes).build();
     }
 
