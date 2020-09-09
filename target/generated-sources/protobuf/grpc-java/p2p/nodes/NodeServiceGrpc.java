@@ -28,17 +28,17 @@ public final class NodeServiceGrpc {
 
   // Static method descriptors that strictly reflect the proto.
   @io.grpc.ExperimentalApi("https://github.com/grpc/grpc-java/issues/1901")
-  public static final io.grpc.MethodDescriptor<p2p.nodes.Node.NodeMessage,
-      p2p.nodes.Node.OkMessage> METHOD_CHANGE_NEXT =
-      io.grpc.MethodDescriptor.<p2p.nodes.Node.NodeMessage, p2p.nodes.Node.OkMessage>newBuilder()
+  public static final io.grpc.MethodDescriptor<p2p.nodes.Node.NodesMessage,
+      p2p.nodes.Node.OkMessage> METHOD_UPDATE_NODES_LIST =
+      io.grpc.MethodDescriptor.<p2p.nodes.Node.NodesMessage, p2p.nodes.Node.OkMessage>newBuilder()
           .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
           .setFullMethodName(generateFullMethodName(
-              "p2p.nodes.NodeService", "changeNext"))
+              "p2p.nodes.NodeService", "updateNodesList"))
           .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-              p2p.nodes.Node.NodeMessage.getDefaultInstance()))
+              p2p.nodes.Node.NodesMessage.getDefaultInstance()))
           .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
               p2p.nodes.Node.OkMessage.getDefaultInstance()))
-          .setSchemaDescriptor(new NodeServiceMethodDescriptorSupplier("changeNext"))
+          .setSchemaDescriptor(new NodeServiceMethodDescriptorSupplier("updateNodesList"))
           .build();
   @io.grpc.ExperimentalApi("https://github.com/grpc/grpc-java/issues/1901")
   public static final io.grpc.MethodDescriptor<p2p.nodes.Node.Token,
@@ -83,9 +83,9 @@ public final class NodeServiceGrpc {
 
     /**
      */
-    public void changeNext(p2p.nodes.Node.NodeMessage request,
+    public void updateNodesList(p2p.nodes.Node.NodesMessage request,
         io.grpc.stub.StreamObserver<p2p.nodes.Node.OkMessage> responseObserver) {
-      asyncUnimplementedUnaryCall(METHOD_CHANGE_NEXT, responseObserver);
+      asyncUnimplementedUnaryCall(METHOD_UPDATE_NODES_LIST, responseObserver);
     }
 
     /**
@@ -98,12 +98,12 @@ public final class NodeServiceGrpc {
     @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
       return io.grpc.ServerServiceDefinition.builder(getServiceDescriptor())
           .addMethod(
-            METHOD_CHANGE_NEXT,
+            METHOD_UPDATE_NODES_LIST,
             asyncUnaryCall(
               new MethodHandlers<
-                p2p.nodes.Node.NodeMessage,
+                p2p.nodes.Node.NodesMessage,
                 p2p.nodes.Node.OkMessage>(
-                  this, METHODID_CHANGE_NEXT)))
+                  this, METHODID_UPDATE_NODES_LIST)))
           .addMethod(
             METHOD_RECV_TOKEN,
             asyncUnaryCall(
@@ -135,10 +135,10 @@ public final class NodeServiceGrpc {
 
     /**
      */
-    public void changeNext(p2p.nodes.Node.NodeMessage request,
+    public void updateNodesList(p2p.nodes.Node.NodesMessage request,
         io.grpc.stub.StreamObserver<p2p.nodes.Node.OkMessage> responseObserver) {
       asyncUnaryCall(
-          getChannel().newCall(METHOD_CHANGE_NEXT, getCallOptions()), request, responseObserver);
+          getChannel().newCall(METHOD_UPDATE_NODES_LIST, getCallOptions()), request, responseObserver);
     }
 
     /**
@@ -170,9 +170,9 @@ public final class NodeServiceGrpc {
 
     /**
      */
-    public p2p.nodes.Node.OkMessage changeNext(p2p.nodes.Node.NodeMessage request) {
+    public p2p.nodes.Node.OkMessage updateNodesList(p2p.nodes.Node.NodesMessage request) {
       return blockingUnaryCall(
-          getChannel(), METHOD_CHANGE_NEXT, getCallOptions(), request);
+          getChannel(), METHOD_UPDATE_NODES_LIST, getCallOptions(), request);
     }
 
     /**
@@ -203,10 +203,10 @@ public final class NodeServiceGrpc {
 
     /**
      */
-    public com.google.common.util.concurrent.ListenableFuture<p2p.nodes.Node.OkMessage> changeNext(
-        p2p.nodes.Node.NodeMessage request) {
+    public com.google.common.util.concurrent.ListenableFuture<p2p.nodes.Node.OkMessage> updateNodesList(
+        p2p.nodes.Node.NodesMessage request) {
       return futureUnaryCall(
-          getChannel().newCall(METHOD_CHANGE_NEXT, getCallOptions()), request);
+          getChannel().newCall(METHOD_UPDATE_NODES_LIST, getCallOptions()), request);
     }
 
     /**
@@ -218,7 +218,7 @@ public final class NodeServiceGrpc {
     }
   }
 
-  private static final int METHODID_CHANGE_NEXT = 0;
+  private static final int METHODID_UPDATE_NODES_LIST = 0;
   private static final int METHODID_RECV_TOKEN = 1;
 
   private static final class MethodHandlers<Req, Resp> implements
@@ -238,8 +238,8 @@ public final class NodeServiceGrpc {
     @java.lang.SuppressWarnings("unchecked")
     public void invoke(Req request, io.grpc.stub.StreamObserver<Resp> responseObserver) {
       switch (methodId) {
-        case METHODID_CHANGE_NEXT:
-          serviceImpl.changeNext((p2p.nodes.Node.NodeMessage) request,
+        case METHODID_UPDATE_NODES_LIST:
+          serviceImpl.updateNodesList((p2p.nodes.Node.NodesMessage) request,
               (io.grpc.stub.StreamObserver<p2p.nodes.Node.OkMessage>) responseObserver);
           break;
         case METHODID_RECV_TOKEN:
@@ -307,7 +307,7 @@ public final class NodeServiceGrpc {
         if (result == null) {
           serviceDescriptor = result = io.grpc.ServiceDescriptor.newBuilder(SERVICE_NAME)
               .setSchemaDescriptor(new NodeServiceFileDescriptorSupplier())
-              .addMethod(METHOD_CHANGE_NEXT)
+              .addMethod(METHOD_UPDATE_NODES_LIST)
               .addMethod(METHOD_RECV_TOKEN)
               .build();
         }

@@ -13,11 +13,11 @@ public class StatisticsList {
     private List<Statistic> statistics;
 
     @XmlElement(name = "statistic")
-    public void setStatistics(List<Statistic> statistics) {
+    public synchronized void setStatistics(List<Statistic> statistics) {
         this.statistics = statistics;
     }
 
-    public List<Statistic> getStatistics() {
+    public synchronized List<Statistic> getStatistics() {
         return statistics;
     }
 

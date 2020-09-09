@@ -23,7 +23,7 @@ public class AnalystServices {
     }
     @Path("get_last_stats")
     @GET
-    public Response getStats(@QueryParam("n") Integer n, @Context UriInfo uriInfo) {
+    public synchronized Response getStats(@QueryParam("n") Integer n, @Context UriInfo uriInfo) {
         MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
         if (n.equals(null))
             return Response.serverError().build();

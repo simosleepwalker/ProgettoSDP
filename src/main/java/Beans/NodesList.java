@@ -13,11 +13,11 @@ public class NodesList {
     private List<Beans.Node> nodes;
 
     @XmlElement(name = "node")
-    public void setNodes (List<Beans.Node> nodes) {
+    public synchronized void setNodes (List<Beans.Node> nodes) {
         this.nodes = nodes;
     }
 
-    public List<Beans.Node> getNodes () {
+    public synchronized List<Beans.Node> getNodes () {
         return nodes;
     }
 

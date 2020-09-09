@@ -20,11 +20,11 @@ public class Statistics {
         this.stats.add(stat);
     }
 
-    public List<Statistic> getStats () {
+    public synchronized List<Statistic> getStats () {
         return this.stats;
     }
 
-    public List<Statistic> getStats (Integer n) {
+    public synchronized List<Statistic> getStats (Integer n) {
         try {
             return this.stats.subList(this.stats.size()-n,this.stats.size());
         } catch (IndexOutOfBoundsException e) { return this.getStats(); }
@@ -41,11 +41,11 @@ public class Statistics {
         return counter;
     }
 
-    public Double getMedia (Integer n) {
+    public synchronized Double getMedia (Integer n) {
         return this.getSumStats(n)/n;
     }
 
-    public Double getVarianza (Integer n) {
+    public synchronized Double getVarianza (Integer n) {
         Double media = this.getMedia(n);
         List<Double> subtracted = this.getStats(n).stream().map(stat -> Math.abs(stat.getVal()-media)).
                 collect(Collectors.toList());
@@ -56,7 +56,7 @@ public class Statistics {
         return sum/(n-1);
     }
 
-    public Double getDevStandard (Integer n) {
+    public synchronized Double getDevStandard (Integer n) {
         return Math.sqrt(this.getVarianza(n));
     }
 

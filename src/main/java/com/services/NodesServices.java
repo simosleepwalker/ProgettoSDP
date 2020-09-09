@@ -13,20 +13,20 @@ public class NodesServices {
 
     @Path("get_nodes")
     @GET
-    public Response getNodes() {
+    public synchronized Response getNodes() {
         NodesList nodes = new NodesList();
         nodes.setNodes(Nodes.getInstance().getNodes());
         return Response.ok(nodes).build();
     }
     @Path("get_nodes_number")
     @GET
-    public Response getNodesNumber() {
+    public synchronized Response getNodesNumber() {
         return Response.ok(Nodes.getInstance().getNodes().size()).build();
     }
     @Path("insert_node")
     @POST
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response insertNode(Node node) {
+    public synchronized Response insertNode(Node node) {
         if (Nodes.getInstance().getNode(node.getId()) == null) {
             Nodes.getInstance().addNode(node);
             NodesList nodes = new NodesList();
@@ -40,7 +40,7 @@ public class NodesServices {
     @Path("remove_node")
     @POST
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response removeNode(Node node) {
+    public synchronized Response removeNode(Node node) {
         NodesList nodes = new NodesList();
         nodes.setNodes(Nodes.getInstance().getNodes());
         Nodes.getInstance().removeNode(node.getId());
