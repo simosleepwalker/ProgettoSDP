@@ -5,7 +5,9 @@ import java.util.Collections;
 
 public class Nodes {
 
-    private ArrayList<Node> nodes;
+    public volatile boolean enteringExitingNode;
+
+    private volatile ArrayList<Node> nodes;
 
     private volatile static Nodes instance;
 
@@ -35,6 +37,7 @@ public class Nodes {
     public synchronized void removeNode (Integer id) { this.nodes.remove(this.getNode(id)); }
 
     public Nodes () {
+        this.enteringExitingNode = false;
         this.nodes = new ArrayList<Node>();
     }
 

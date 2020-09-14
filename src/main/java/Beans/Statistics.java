@@ -6,17 +6,17 @@ import java.util.stream.Collectors;
 
 public class Statistics {
 
-    private ArrayList<Statistic> stats;
+    private volatile ArrayList<Statistic> stats;
 
     private volatile static Statistics instance;
 
-    public static Statistics getInstance() {
+    public synchronized static Statistics getInstance() {
         if(instance==null)
             instance = new Statistics();
         return instance;
     }
 
-    public void addStat (Statistic stat) {
+    public synchronized void addStat (Statistic stat) {
         this.stats.add(stat);
     }
 
@@ -30,11 +30,7 @@ public class Statistics {
         } catch (IndexOutOfBoundsException e) { return this.getStats(); }
     }
 
-    public Statistics () {
-        this.stats = new ArrayList<Statistic>();
-    }
-
-    public Double getSumStats (Integer n) {
+    public synchronized Double getSumStats (Integer n) {
         Double counter = (double) 0;
         for (int i = this.stats.size()-1; i >= this.stats.size()-n; i--)
             counter = counter + ((Statistic)this.stats.get(i)).getVal();
@@ -58,6 +54,10 @@ public class Statistics {
 
     public synchronized Double getDevStandard (Integer n) {
         return Math.sqrt(this.getVarianza(n));
+    }
+
+    public Statistics () {
+        this.stats = new ArrayList<Statistic>();
     }
 
 }

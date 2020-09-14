@@ -10,9 +10,9 @@ import java.util.List;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class NodesList {
 
+    @XmlElement(name = "node")
     private List<Beans.Node> nodes;
 
-    @XmlElement(name = "node")
     public synchronized void setNodes (List<Beans.Node> nodes) {
         this.nodes = nodes;
     }

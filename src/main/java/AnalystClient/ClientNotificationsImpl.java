@@ -29,6 +29,7 @@ public class ClientNotificationsImpl extends AnalystClientGrpc.AnalystClientImpl
 
     @Override
     public void notify(Analyst.notificationMessage request, StreamObserver<Analyst.okMessage> responseObserver) {
+        System.out.println("");
         System.out.println(request.getMessage());
         Analyst.okMessage response = Analyst.okMessage.newBuilder().setMessage("Ok").build();
         responseObserver.onNext(response);
