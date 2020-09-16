@@ -18,7 +18,7 @@ public class Nodes {
     }
 
     public synchronized ArrayList<Node> getNodes() {
-        ArrayList<Node> nodes = this.nodes;
+        ArrayList<Node> nodes = new ArrayList<>(this.nodes);
         Collections.sort(nodes);
         return nodes;
     }

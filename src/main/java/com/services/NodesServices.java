@@ -54,8 +54,8 @@ public class NodesServices {
             while (instance.enteringExitingNode) try { instance.wait(); } catch (InterruptedException e) { }
             instance.enteringExitingNode = true;
             NodesList nodes = new NodesList();
-            nodes.setNodes(Nodes.getInstance().getNodes());
             instance.removeNode(node.getId());
+            nodes.setNodes(Nodes.getInstance().getNodes());
             Notifications.sendNotification("Node [" + node.getId().toString() + "] exited from Network");
             instance.enteringExitingNode = false;
             instance.notify();
