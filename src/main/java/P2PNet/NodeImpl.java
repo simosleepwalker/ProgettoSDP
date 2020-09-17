@@ -110,18 +110,38 @@ public class NodeImpl extends NodeServiceGrpc.NodeServiceImplBase {
     }
 
     public void sendToken (String ip, Integer port, p2p.nodes.Node.Token token) {
-        final ManagedChannel channel = ManagedChannelBuilder.forTarget(ip + ":" + port.toString()).usePlaintext(true).build();
-        NodeServiceGrpc.NodeServiceBlockingStub stub = NodeServiceGrpc.newBlockingStub(channel);
-        Node.OkMessage res = stub.recvToken(token);
-        channel.shutdown();
-        if (!res.getVal().equals("Ok")) {
-            sendToken(getNextNode().getIp(),getNextNode().getPort(),token);
+        try {
+            final ManagedChannel channel = ManagedChannelBuilder.forTarget(ip + ":" + port.toString()).usePlaintext(true).build();
+            NodeServiceGrpc.NodeServiceBlockingStub stub = NodeServiceGrpc.newBlockingStub(channel);
+            Node.OkMessage res = stub.recvToken(token);
+            channel.shutdown();
+            if (!res.getVal().equals("Ok")) {
+                throw new Exception("Communication error");
+            }
+            this.hasToken.unlock();
         }
-        this.hasToken.unlock();
+        catch (Exception e) {
+            if (nodesInNetwork.size() != 1)
+                sendToken(getNextNode().getIp(),getNextNode().getPort(),token);
+            else {
+                this.hasToken.unlock();
+                tokenElaboration(token);
+            }
+        }
     }
     //endregion
 
     //region Metodi
+    public boolean doneNodes (ArrayList doneNodes) {
+        ArrayList<Integer> ids = new ArrayList<>();
+        for (int i = 0; i < nodesInNetwork.size(); i++)
+            ids.add(nodesInNetwork.get(i).getId());
+        if (doneNodes.containsAll(ids))
+            return true;
+        else
+            return false;
+    }
+
     public Node.Token statsElaboration (Node.Token request) {
         List done = new ArrayList(request.getIdsList());
         List values = new ArrayList(request.getValuesList());
@@ -129,7 +149,7 @@ public class NodeImpl extends NodeServiceGrpc.NodeServiceImplBase {
             values.add(this.sensorSimulator.getMedia());
             done.add(this.id);
         }
-        if (nodesInNetwork.size() <= done.size()) {
+        if (doneNodes((ArrayList) done)) {
             System.out.println("Stats sent to Server with nodes: " + done.toString());
             sendStat(getMedia(values));
             values.clear();
